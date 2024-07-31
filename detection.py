@@ -42,9 +42,22 @@ def predict_image(image):
         logging.debug(f"Image shape for prediction: {img.shape}")
 
         prediction = model.predict(img)
-        logging.debug(f"Prediction: {prediction}")
+        logging.debug(f"Prediction output: {prediction}")
         
-        return prediction
+        # Assuming the model output is logits, convert them to probabilities if necessary
+        if len(prediction.shape) == 2 and prediction.shape[1] == 2:
+            # Directly use the prediction if it is in the form [benign, malignant]
+            benign_prob = prediction[0][0]
+            malignant_prob = prediction[0][1]
+        else:
+            # Convert logits to probabilities if needed (e.g., using softmax)
+            prediction_prob = tf.nn.softmax(prediction).numpy()
+            benign_prob = prediction_prob[0][0]
+            malignant_prob = prediction_prob[0][1]
+        
+        logging.debug(f"Benign probability: {benign_prob}, Malignant probability: {malignant_prob}")
+        
+        return np.array([[benign_prob, malignant_prob]])
     except Exception as e:
         logging.error(f"Error during prediction: {e}")
         return np.array([[0, 0]])
