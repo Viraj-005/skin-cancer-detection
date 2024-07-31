@@ -54,6 +54,10 @@ class VideoTransformer(VideoTransformerBase):
         self.result = None
     
     def transform(self, frame):
+        if frame is None:
+            logging.warning("Empty frame received")
+            return np.zeros((720, 1280, 3), dtype=np.uint8)  # Return an empty frame
+        
         img = frame.to_ndarray(format="bgr24")
         
         # Convert to RGB
@@ -128,54 +132,61 @@ def app():
             label = ctx.video_transformer.result
             if label:
                 st.write(label)
+            else:
+                st.write("No prediction yet. Please make sure the camera is properly connected and try again.")
     else:
         uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
         if uploaded_file is not None:
-            image = Image.open(uploaded_file)
-            
-            # Resize image before displaying
-            image = image.resize((500, 500))  # Adjust size as needed
-            
-            # Convert image to base64
-            img_base64 = image_to_base64(image)
-            
-            # Display the centered image using HTML
-            st.markdown(f"""
-                <div style='text-align: center;'>
-                    <img src="data:image/png;base64,{img_base64}" width="500" />
-                    <div style='margin-top: 10px; font-size: 16px; color: #666;'>🖼️ Uploaded Image</div>
-                </div>
-                """, unsafe_allow_html=True)
-            
-            # Get prediction
-            prediction = predict_image(image)
-            
-            if prediction is not None:
-                # Extract probabilities
-                benign_prob = prediction[0][0]
-                malignant_prob = prediction[0][1]
+            try:
+                image = Image.open(uploaded_file)
+                logging.info(f"Uploaded file: {uploaded_file.name}, Size: {uploaded_file.size} bytes")
                 
-                # Display probabilities
-                st.write(f"**Benign Probability:** {benign_prob * 100:.2f}%")
-                st.write(f"**Malignant Probability:** {malignant_prob * 100:.2f}%")
+                # Resize image before displaying
+                image = image.resize((500, 500))  # Adjust size as needed
                 
-                # Define a threshold for cancer detection
-                threshold = 0.5  # 50%
+                # Convert image to base64
+                img_base64 = image_to_base64(image)
                 
-                if malignant_prob > threshold:
-                    st.markdown(f"""
-                        <div style='text-align: center; background-color: #ffcccc; padding: 10px; border-radius: 5px;'>
-                            <h3 style='color: #ff0000;'>🚨 Skin Cancer Detected</h3>
-                            <p style='color: #0F0F0F;'>Detection: Malignant (Confidence: {malignant_prob * 100:.2f}%)</p>
-                        </div>
+                # Display the centered image using HTML
+                st.markdown(f"""
+                    <div style='text-align: center;'>
+                        <img src="data:image/png;base64,{img_base64}" width="500" />
+                        <div style='margin-top: 10px; font-size: 16px; color: #666;'>🖼️ Uploaded Image</div>
+                    </div>
                     """, unsafe_allow_html=True)
-                else:
-                    st.markdown(f"""
-                        <div style='text-align: center; background-color: #ccffcc; padding: 10px; border-radius: 5px;'>
-                            <h3 style='color: #006400;'>✅ No Skin Cancer Detected</h3>
-                            <p style='color: #0F0F0F;'>Detection: Benign (Confidence: {benign_prob * 100:.2f}%)</p>
-                    """, unsafe_allow_html=True)
+                
+                # Get prediction
+                prediction = predict_image(image)
+                
+                if prediction is not None:
+                    # Extract probabilities
+                    benign_prob = prediction[0][0]
+                    malignant_prob = prediction[0][1]
+                    
+                    # Display probabilities
+                    st.write(f"**Benign Probability:** {benign_prob * 100:.2f}%")
+                    st.write(f"**Malignant Probability:** {malignant_prob * 100:.2f}%")
+                    
+                    # Define a threshold for cancer detection
+                    threshold = 0.5  # 50%
+                    
+                    if malignant_prob > threshold:
+                        st.markdown(f"""
+                            <div style='text-align: center; background-color: #ffcccc; padding: 10px; border-radius: 5px;'>
+                                <h3 style='color: #ff0000;'>🚨 Skin Cancer Detected</h3>
+                                <p style='color: #0F0F0F;'>Detection: Malignant (Confidence: {malignant_prob * 100:.2f}%)</p>
+                            </div>
+                        """, unsafe_allow_html=True)
+                    else:
+                        st.markdown(f"""
+                            <div style='text-align: center; background-color: #ccffcc; padding: 10px; border-radius: 5px;'>
+                                <h3 style='color: #006400;'>✅ No Skin Cancer Detected</h3>
+                                <p style='color: #0F0F0F;'>Detection: Benign (Confidence: {benign_prob * 100:.2f}%)</p>
+                        """, unsafe_allow_html=True)
+            except Exception as e:
+                logging.error(f"Error processing uploaded file: {e}")
+                st.error("There was an error processing the uploaded image.")
 
 if __name__ == "__main__":
     app()
