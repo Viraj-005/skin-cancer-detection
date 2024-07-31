@@ -1,3 +1,5 @@
+![Logo](images/topbanner.png)
+
 # SmartSkin Scan
 
 Welcome to the SmartSkin Scan (Skin Cancer Detection Web App)! This application leverages the power of deep learning to assist users in detecting skin cancer through image analysis. Whether you're a healthcare professional or seeking to monitor skin health, this tool provides an easy-to-use interface for detection, visualization, and model training.
@@ -13,8 +15,8 @@ On the Home page, users get an overview of what the web app offers. The applicat
 
 ### Detection
 The Detection page allows users to detect skin cancer through two methods:
-- **Upload Images**: Users can upload skin images from their device for analysis.
-- **Real-time Detection**: Users can use their device's camera to capture and analyze skin images in real-time.
+- **Upload Images**: Users can upload skin images from their device for analysis. 📤
+- **Real-time Detection**: Users can use their device's camera to capture and analyze skin images in real-time. 📸                    
 
 ### Visualizing
 The Visualizing page provides various metrics and visual aids to understand the model's performance:
@@ -57,11 +59,11 @@ Before running the app, please ensure you have created a virtual environment (`.
    ```
 
 2. **Activate the virtual environment:**
-   - On Windows:
+   On Windows:
      ```bash
      .venv\Scripts\activate
      ```
-   - On macOS and Linux:
+   On macOS and Linux:
      ```bash
      source .venv/bin/activate
      ```
@@ -96,6 +98,3 @@ View detailed metrics about the model’s performance, including accuracy, loss,
 
 ## Contributing
 Contributions are welcome! Please fork the repository and create a pull request with your changes.
-
-## License
-This project is licensed under the MIT License. Please take a look at the [LICENSE](LICENSE) file for details.
