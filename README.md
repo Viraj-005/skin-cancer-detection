@@ -59,7 +59,8 @@ Before running the app, please ensure you have created a virtual environment (`.
    ```
 
 2. **Activate the virtual environment:**
-   On Windows:
+
+    On Windows:
      ```bash
      .venv\Scripts\activate
      ```
@@ -68,7 +69,7 @@ Before running the app, please ensure you have created a virtual environment (`.
      source .venv/bin/activate
      ```
 
-3. **Install required packages:**
+4. **Install required packages:**
    ```bash
    pip install -r requirements.txt
     ```
