@@ -1,5 +1,4 @@
 import streamlit as st
-import os
 from PIL import Image, ImageDraw
 
 # Function to round the corners of an image
@@ -15,22 +14,18 @@ def round_corners(image, radius):
 def app():
     # Load the image
     image_path = "images/topbanner.png"
+    image = Image.open(image_path)
+
+    # Resize the image while keeping the height constant
+    new_width = 1200
+    new_height = 400
+    resized_image = image.resize((new_width, new_height))
     
-    if os.path.exists(image_path):
-        image = Image.open(image_path)
-        
-        # Resize the image while keeping the height constant
-        new_width = 1200
-        new_height = 400
-        resized_image = image.resize((new_width, new_height))
-        
-        # Round the corners of the image
-        rounded_image = round_corners(resized_image, radius=15)
-        
-        # Display the resized and rounded image
-        st.image(rounded_image)
-    else:
-        st.error(f"Image file not found at {image_path}")
+    # Round the corners of the image
+    rounded_image = round_corners(resized_image, radius=15)
+
+    # Display the resized and rounded image
+    st.image(rounded_image)
 
     # Introduction text
     st.markdown("""
@@ -57,7 +52,9 @@ def app():
                 3. **📈 Results:** Receive instant feedback with confidence scores, helping you make informed decisions about your skin health.
                 
                 Your skin health is our priority. Use **SmartSkin Scan** to stay vigilant and proactive in managing your skin's well-being!
-                """)
+            """)
+
+
 
 if __name__ == "__main__":
     app()
