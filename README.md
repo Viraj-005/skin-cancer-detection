@@ -15,7 +15,7 @@ On the Home page, users get an overview of what the web app offers. The applicat
 ### Detection
 The Detection page allows users to detect skin cancer and receive immediate feedback:
 - **Upload Images**: Users can upload skin images from their device for analysis. 📤
-- **Immediate Feedback**: Whether the uploaded image is benign (non-cancerous) or malignant (cancerous).               
+- **Immediate Feedback**: The user receives immediate feedback on whether the uploaded image is benign (non-cancerous) or malignant (cancerous). 💡             
 
 ### Visualizing
 The Visualizing page provides various metrics and visual aids to understand the model's performance:
