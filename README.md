@@ -11,7 +11,7 @@ On the Home page, users get an overview of what the web app offers. The applicat
 - Upload images of skin lesions for analysis. 📸
 - Use real-time camera functionality to capture and analyze skin images. ⏱️
 - Visualize detailed metrics about the model’s performance. 📊
-- Train and customize the skin cancer detection model according to their needs. 
+- Train and customize the skin cancer detection model according to their needs. 🧠
 
 ### Detection
 The Detection page allows users to detect skin cancer through two methods:
