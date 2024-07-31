@@ -13,7 +13,11 @@ import base64
 warnings.filterwarnings('ignore')
 
 # Load the improved trained model
-model = load_model('model/skin_cancer_model.h5')
+try:
+    model = load_model('model/skin_cancer_model.h5')
+    print("Model loaded successfully")
+except Exception as e:
+    print(f"Error loading model: {e}")
 
 def image_to_base64(image):
     buffered = io.BytesIO()
@@ -22,22 +26,15 @@ def image_to_base64(image):
     return img_str
 
 def predict_image(image):
-    # Resize image to 224x224 using Lanczos resampling
-    img = ImageOps.fit(image, (224, 224), Image.Resampling.LANCZOS)
-    
-    # Convert image to numpy array
-    img = np.asarray(img)
-    
-    # Normalize image
-    img = img / 255.0
-    
-    # Expand dimensions to match model input
-    img = np.expand_dims(img, axis=0)
-    
-    # Make prediction
-    prediction = model.predict(img)
-    
-    return prediction
+    try:
+        img = ImageOps.fit(image, (224, 224), Image.Resampling.LANCZOS)
+        img = np.asarray(img) / 255.0
+        img = np.expand_dims(img, axis=0)
+        prediction = model.predict(img)
+        return prediction
+    except Exception as e:
+        st.error(f"Error in prediction: {e}")
+        return np.array([[0, 0]])
 
 class VideoTransformer(VideoTransformerBase):
     def __init__(self):
