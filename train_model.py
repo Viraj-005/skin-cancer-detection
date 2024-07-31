@@ -1,4 +1,5 @@
 import streamlit as st
+import tensorflow as tf
 from tensorflow.keras.models import load_model # type: ignore
 from tensorflow.keras.layers import Dense, Dropout, GlobalAveragePooling2D # type: ignore
 from tensorflow.keras.optimizers import Adam # type: ignore
