@@ -8,15 +8,13 @@ Welcome to the SmartSkin Scan (Skin Cancer Detection Web App)! This application 
 
 ### Home
 On the Home page, users get an overview of what the web app offers. The application is designed to help detect skin cancer by analyzing skin images. With this app, users can:
-- Upload images of skin lesions for analysis. 📸
-- Use real-time camera functionality to capture and analyze skin images. ⏱️
+- Upload images of skin lesions for analysis. 📸                  
 - Visualize detailed metrics about the model’s performance. 📊
 - Train and customize the skin cancer detection model according to their needs. 🧠
 
 ### Detection
 The Detection page allows users to detect skin cancer through two methods:
-- **Upload Images**: Users can upload skin images from their device for analysis. 📤
-- **Real-time Detection**: Users can use their device's camera to capture and analyze skin images in real-time. 📸                    
+- **Upload Images**: Users can upload skin images from their device for analysis. 📤                 
 
 ### Visualizing
 The Visualizing page provides various metrics and visual aids to understand the model's performance:
@@ -87,7 +85,6 @@ Navigate to the Home page to get a brief introduction to the web app’s capabil
 
 ### Detection
 - **Upload Image**: Click on the "Upload" button to select an image from your device. The app will process the image and provide a diagnosis.
-- **Real-time Detection**: Click on the "Camera" button to open the camera interface. Capture an image for real-time analysis.
 
 ### Visualizing
 View detailed metrics about the model’s performance, including accuracy, loss, and confusion matrix.
