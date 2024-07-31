@@ -1,6 +1,6 @@
 import streamlit as st
 import tensorflow as tf
-from tensorflow.keras.models import load_model  # type: ignore
+from tensorflow.keras.models import load_model # type: ignore
 from PIL import Image, ImageOps
 import numpy as np
 from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
@@ -54,34 +54,27 @@ class VideoTransformer(VideoTransformerBase):
         self.result = None
     
     def transform(self, frame):
-        img = frame.to_ndarray(format="bgr24")
-        
-        # Convert to RGB
-        img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        
-        # Enhance image quality by adjusting brightness and contrast if necessary
-        img_rgb = cv2.convertScaleAbs(img_rgb, alpha=1.1, beta=10)
-        
-        # Convert to PIL image
-        pil_img = Image.fromarray(img_rgb)
-        
-        # Make prediction
-        prediction = predict_image(pil_img)
+        try:
+            img = frame.to_ndarray(format="bgr24")
+            img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            img_rgb = cv2.convertScaleAbs(img_rgb, alpha=1.1, beta=10)
+            pil_img = Image.fromarray(img_rgb)
+            
+            prediction = predict_image(pil_img)
 
-        benign_prob = prediction[0][0]
-        malignant_prob = prediction[0][1]
-        
-        if malignant_prob > 0.5:
-            label = f"Malignant: {malignant_prob * 100:.2f}%"
-            color = (0, 0, 255)
-        else:
-            label = f"Benign: {benign_prob * 100:.2f}%"
-            color = (0, 255, 0)
-        
-        # Annotate image with prediction result
-        img = cv2.putText(img, label, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2, cv2.LINE_AA)
-        self.result = label
-        return img
+            if prediction is not None:
+                benign_prob = prediction[0][0]
+                malignant_prob = prediction[0][1]
+                
+                label = f"Benign: {benign_prob * 100:.2f}%, Malignant: {malignant_prob * 100:.2f}%"
+                color = (0, 255, 0) if malignant_prob <= 0.5 else (0, 0, 255)
+                img = cv2.putText(img, label, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2, cv2.LINE_AA)
+                
+                self.result = label
+            return img
+        except Exception as e:
+            logging.error(f"Error in VideoTransformer: {e}")
+            return frame.to_ndarray(format="bgr24")
 
 def app():
     st.title("📸 Skin Cancer Detection")
@@ -115,15 +108,10 @@ def app():
     use_camera = st.checkbox("Use Camera")
 
     if use_camera:
-        ctx = webrtc_streamer(key="skin-cancer-detection", 
-                              video_transformer_factory=VideoTransformer, 
-                              rtc_configuration={
-                                  "video": {
-                                      "width": {"ideal": 1280},
-                                      "height": {"ideal": 720},
-                                      "frameRate": {"ideal": 30, "max": 60},
-                                  }
-                              })
+        ctx = webrtc_streamer(
+            key="skin-cancer-detection",
+            video_transformer_factory=VideoTransformer
+        )
         if ctx.video_transformer:
             label = ctx.video_transformer.result
             if label:
@@ -133,14 +121,8 @@ def app():
 
         if uploaded_file is not None:
             image = Image.open(uploaded_file)
-            
-            # Resize image before displaying
-            image = image.resize((500, 500))  # Adjust size as needed
-            
-            # Convert image to base64
+            image = image.resize((500, 500))
             img_base64 = image_to_base64(image)
-            
-            # Display the centered image using HTML
             st.markdown(f"""
                 <div style='text-align: center;'>
                     <img src="data:image/png;base64,{img_base64}" width="500" />
@@ -148,20 +130,16 @@ def app():
                 </div>
                 """, unsafe_allow_html=True)
             
-            # Get prediction
             prediction = predict_image(image)
             
             if prediction is not None:
-                # Extract probabilities
                 benign_prob = prediction[0][0]
                 malignant_prob = prediction[0][1]
                 
-                # Display probabilities
                 st.write(f"**Benign Probability:** {benign_prob * 100:.2f}%")
                 st.write(f"**Malignant Probability:** {malignant_prob * 100:.2f}%")
                 
-                # Define a threshold for cancer detection
-                threshold = 0.5  # 50%
+                threshold = 0.5
                 
                 if malignant_prob > threshold:
                     st.markdown(f"""
