@@ -36,18 +36,17 @@ def app():
                 
                 **Why Choose SmartSkin Scan?**
                 - **🕵️‍♂️ Early Detection:** Identify potential skin cancer at an early stage with high accuracy.
-                - **😊 User-Friendly:** Simple and intuitive interface for easy image uploads or real-time camera use.
+                - **😊 User-Friendly:** Simple and intuitive interface for easy image uploads.
                 - **🤖 Advanced Technology:** Powered by cutting-edge AI and deep learning models to ensure reliable results.
                 - **📊 Comprehensive Insights:** Get detailed analysis and probabilities for benign and malignant conditions.
                 
                 **What You Can Do with SmartSkin Scan:**
-                - **📸 Upload or Capture Images:** Easily upload saved images or use camera for instant analysis.
-                - **⏱️ Real-Time Analysis:** Use our advanced AI model to detect and classify skin conditions from your images.
+                - **📸 Upload Images:** Easily upload saved images for analysis.
                 - **🧠 Model Training:** Train the model in real-time to improve its performance and get hands-on experience with machine learning.
                 - **🔍 View Results:** Receive immediate feedback and detailed insights about your skin health.
                 
                 **How It Works:**
-                1. **📤 Upload or Capture:** Choose an image of a skin lesion or use your camera for real-time analysis.
+                1. **📤 Upload or Capture:** Choose an image of a skin lesion for analysis.
                 2. **🔬 Analysis:** Our AI model processes the image to detect and classify the skin condition.
                 3. **📈 Results:** Receive instant feedback with confidence scores, helping you make informed decisions about your skin health.
                 
