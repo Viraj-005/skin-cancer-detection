@@ -6,6 +6,7 @@ from tensorflow.keras.optimizers import Adam # type: ignore
 from tensorflow.keras.preprocessing.image import ImageDataGenerator # type: ignore
 import plotly.graph_objects as go
 import time
+import scipy
 import tempfile
 
 # Fixed path for pre-trained model

@@ -8,3 +8,4 @@ opencv-python==4.10.0.84
 streamlit-webrtc==0.47.7
 streamlit-option-menu==0.3.13
 plotly==5.22.0
+scipy==1.14.0
