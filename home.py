@@ -1,5 +1,6 @@
 import streamlit as st
 import requests
+from streamlit_lottie import st_lottie
 from PIL import Image, ImageDraw
 
 # Function to load Lottie animation from URL
@@ -20,6 +21,9 @@ def round_corners(image, radius):
     return image
 
 def app():
+    # Lottie animation URL
+    lottie_url = "https://lottie.host/b1dd8e5a-a564-456a-8b07-ec8ca2844d35/NZRI2uWqny.json"  # Lottie URL , extra->(https://lottie.host/8e7b345a-b604-4323-bb9f-ff397acee353/UwubwemMkg.json)
+    lottie_json = load_lottieurl(lottie_url)
     
     # Load the image
     image_path = "images/topbanner.png"
@@ -68,11 +72,11 @@ def app():
                     """)
 
 
-   # GIF file in the second column
+    # Lottie animation in the second column
     with col2:
-        gif_path = "images/hello.gif"  # Replace with the path to your GIF file
         st.markdown('<div style="margin-top: -80px;"></div>', unsafe_allow_html=True)
-        st.image(gif_path, width=400)  # Adjust width as needed
+        if lottie_json:
+            st_lottie(lottie_json, speed=1, width=400, height=400, key="intro_animation")  # Adjust width and height
 
 if __name__ == "__main__":
     app()
