@@ -8,16 +8,21 @@ import cv2
 import warnings
 import io
 import base64
+import logging
 
 # Suppress warnings
 warnings.filterwarnings('ignore')
 
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
+
 # Load the improved trained model
 try:
     model = load_model('model/skin_cancer_model.h5')
-    print("Model loaded successfully")
+    logging.info("Model loaded successfully")
 except Exception as e:
-    print(f"Error loading model: {e}")
+    logging.error(f"Error loading model: {e}")
+    model = None
 
 def image_to_base64(image):
     buffered = io.BytesIO()
@@ -26,14 +31,22 @@ def image_to_base64(image):
     return img_str
 
 def predict_image(image):
+    if model is None:
+        logging.error("Model is not loaded.")
+        return np.array([[0, 0]])
+    
     try:
         img = ImageOps.fit(image, (224, 224), Image.Resampling.LANCZOS)
         img = np.asarray(img) / 255.0
         img = np.expand_dims(img, axis=0)
+        logging.debug(f"Image shape for prediction: {img.shape}")
+
         prediction = model.predict(img)
+        logging.debug(f"Prediction: {prediction}")
+        
         return prediction
     except Exception as e:
-        st.error(f"Error in prediction: {e}")
+        logging.error(f"Error during prediction: {e}")
         return np.array([[0, 0]])
 
 class VideoTransformer(VideoTransformerBase):
@@ -138,30 +151,31 @@ def app():
             # Get prediction
             prediction = predict_image(image)
             
-            # Extract probabilities
-            benign_prob = prediction[0][0]
-            malignant_prob = prediction[0][1]
-            
-            # Display probabilities
-            st.write(f"**Benign Probability:** {benign_prob * 100:.2f}%")
-            st.write(f"**Malignant Probability:** {malignant_prob * 100:.2f}%")
-            
-            # Define a threshold for cancer detection
-            threshold = 0.5  # 50%
-            
-            if malignant_prob > threshold:
-                st.markdown(f"""
-                    <div style='text-align: center; background-color: #ffcccc; padding: 10px; border-radius: 5px;'>
-                        <h3 style='color: #ff0000;'>🚨 Skin Cancer Detected</h3>
-                        <p style='color: #0F0F0F;'>Detection: Malignant (Confidence: {malignant_prob * 100:.2f}%)</p>
-                    </div>
-                """, unsafe_allow_html=True)
-            else:
-                st.markdown(f"""
-                    <div style='text-align: center; background-color: #ccffcc; padding: 10px; border-radius: 5px;'>
-                        <h3 style='color: #006400;'>✅ No Skin Cancer Detected</h3>
-                        <p style='color: #0F0F0F;'>Detection: Benign (Confidence: {benign_prob * 100:.2f}%)</p>
-                """, unsafe_allow_html=True)
+            if prediction is not None:
+                # Extract probabilities
+                benign_prob = prediction[0][0]
+                malignant_prob = prediction[0][1]
+                
+                # Display probabilities
+                st.write(f"**Benign Probability:** {benign_prob * 100:.2f}%")
+                st.write(f"**Malignant Probability:** {malignant_prob * 100:.2f}%")
+                
+                # Define a threshold for cancer detection
+                threshold = 0.5  # 50%
+                
+                if malignant_prob > threshold:
+                    st.markdown(f"""
+                        <div style='text-align: center; background-color: #ffcccc; padding: 10px; border-radius: 5px;'>
+                            <h3 style='color: #ff0000;'>🚨 Skin Cancer Detected</h3>
+                            <p style='color: #0F0F0F;'>Detection: Malignant (Confidence: {malignant_prob * 100:.2f}%)</p>
+                        </div>
+                    """, unsafe_allow_html=True)
+                else:
+                    st.markdown(f"""
+                        <div style='text-align: center; background-color: #ccffcc; padding: 10px; border-radius: 5px;'>
+                            <h3 style='color: #006400;'>✅ No Skin Cancer Detected</h3>
+                            <p style='color: #0F0F0F;'>Detection: Benign (Confidence: {benign_prob * 100:.2f}%)</p>
+                    """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     app()
