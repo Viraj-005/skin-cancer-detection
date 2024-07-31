@@ -6,11 +6,15 @@ from tensorflow.keras.optimizers import Adam # type: ignore
 from tensorflow.keras.preprocessing.image import ImageDataGenerator # type: ignore
 import plotly.graph_objects as go
 import time
-import scipy
 import tempfile
+import scipy
 
 # Fixed path for pre-trained model
 MODEL_PATH = 'model/skin_cancer_model.h5'
+
+@st.cache_resource
+def load_skin_cancer_model():
+    return load_model(MODEL_PATH)
 
 # Function to plot training history
 def plot_training_history(history):
@@ -68,121 +72,127 @@ def app():
     learning_rate_phase1 = st.number_input("Learning rate for initial training", min_value=0.0001, max_value=0.1, value=0.001, format="%.4f")
     learning_rate_phase2 = st.number_input("Learning rate for fine-tuning", min_value=1e-6, max_value=0.01, value=1e-5, format="%.6f")
 
-    # Button to start training
+    # Initialize session state to manage the training process
+    if 'training_in_progress' not in st.session_state:
+        st.session_state.training_in_progress = False
+
     if st.button("Start Training"):
-        training_message = st.warning("It takes some time to train, please stay on this page.")
-        
-        # Initialize the progress bar
-        progress_bar = st.progress(0)
+        st.session_state.training_in_progress = True
 
-        # Load the pre-trained model
-        model = load_model(MODEL_PATH)
+        try:
+            training_message = st.warning("It takes some time to train, please stay on this page.")
+            progress_bar = st.progress(0)
 
-        # Optionally freeze the base layers
-        for layer in model.layers[:-4]:
-            layer.trainable = False
+            # Load the pre-trained model
+            model = load_skin_cancer_model()
 
-        # Compile the model for initial training
-        model.compile(optimizer=Adam(learning_rate=learning_rate_phase1), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+            # Optionally freeze the base layers
+            for layer in model.layers[:-4]:
+                layer.trainable = False
 
-        # Data augmentation
-        datagen = ImageDataGenerator(
-            rotation_range=40,
-            width_shift_range=0.2,
-            height_shift_range=0.2,
-            shear_range=0.2,
-            zoom_range=0.2,
-            horizontal_flip=True,
-            fill_mode='nearest',
-            validation_split=0.2  # Split data into 80% train and 20% validation
-        )
+            # Compile the model for initial training
+            model.compile(optimizer=Adam(learning_rate=learning_rate_phase1), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
-        # Load training data
-        train_generator = datagen.flow_from_directory(
-            'training_dataset',  # Replace with your dataset path
-            target_size=(224, 224),
-            batch_size=32,
-            class_mode='sparse',
-            subset='training'
-        )
+            # Data augmentation
+            datagen = ImageDataGenerator(
+                rotation_range=40,
+                width_shift_range=0.2,
+                height_shift_range=0.2,
+                shear_range=0.2,
+                zoom_range=0.2,
+                horizontal_flip=True,
+                fill_mode='nearest',
+                validation_split=0.2  # Split data into 80% train and 20% validation
+            )
 
-        # Load validation data
-        validation_generator = datagen.flow_from_directory(
-            'training_dataset',  # Replace with your dataset path
-            target_size=(224, 224),
-            batch_size=32,
-            class_mode='sparse',
-            subset='validation'
-        )
+            # Load training data
+            train_generator = datagen.flow_from_directory(
+                'training_dataset',  # Replace with your dataset path
+                target_size=(224, 224),
+                batch_size=32,
+                class_mode='sparse',
+                subset='training'
+            )
 
-        # Train the model (initial training)
-        history_phase1 = model.fit(train_generator, validation_data=validation_generator, epochs=epochs_phase1)
-        progress_bar.progress(50)
-        
-        # Notify that initial training is done
-        initial_training_success = st.success("Initial training done. Fine-tuning starts now!")
+            # Load validation data
+            validation_generator = datagen.flow_from_directory(
+                'training_dataset',  # Replace with your dataset path
+                target_size=(224, 224),
+                batch_size=32,
+                class_mode='sparse',
+                subset='validation'
+            )
 
-        # Hide the success message after a few seconds
-        time.sleep(5)
-        initial_training_success.empty()
-
-        # Unfreeze the last few layers of the base model
-        for layer in model.layers[-4:]:
-            layer.trainable = True
-
-        # Compile the model again for fine-tuning
-        model.compile(optimizer=Adam(learning_rate=learning_rate_phase2), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-
-        # Fine-tune the model
-        history_phase2 = model.fit(train_generator, validation_data=validation_generator, epochs=epochs_phase2)
-        progress_bar.progress(100)
-
-        # Combine history of both training phases
-        for key in history_phase2.history.keys():
-            history_phase1.history[key].extend(history_phase2.history[key])
-
-        # Evaluate the model
-        loss, accuracy = model.evaluate(validation_generator)
-        st.write(f'Test Accuracy: {accuracy * 100:.2f}%')
-
-        # Display training results
-        st.write("Training complete!")
-        plot_training_history(history_phase1)
-        
-        # Save the re-trained model to temporary files with both .h5 and .keras extensions
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".h5") as tmp_file_h5, \
-             tempfile.NamedTemporaryFile(delete=False, suffix=".keras") as tmp_file_keras:
-            # Save the model in both formats
-            model.save(tmp_file_h5.name)
-            model.save(tmp_file_keras.name, save_format='keras')
+            # Train the model (initial training)
+            history_phase1 = model.fit(train_generator, validation_data=validation_generator, epochs=epochs_phase1)
+            progress_bar.progress(50)
             
-            # Get file paths
-            temp_file_path_h5 = tmp_file_h5.name
-            temp_file_path_keras = tmp_file_keras.name
-        
-        # Remove(hide) training message
-        training_message.empty()
-        
-        # Remove(hide) the progress bar
-        progress_bar.empty()
-        
-        # Display celebration animation
-        st.balloons()
+            # Notify that initial training is done
+            initial_training_success = st.success("Initial training done. Fine-tuning starts now!")
+            time.sleep(5)
+            initial_training_success.empty()
 
-        # Provide download links for both models
-        with open(temp_file_path_h5, "rb") as file_h5, open(temp_file_path_keras, "rb") as file_keras:
-            st.download_button(
-                label="Download Trained Model (.h5)",
-                data=file_h5,
-                file_name="trained_skin_cancer_model.h5",
-                mime="application/octet-stream"
-            )
-            st.download_button(
-                label="Download Trained Model (.keras)",
-                data=file_keras,
-                file_name="trained_skin_cancer_model.keras",
-                mime="application/octet-stream"
-            )
+            # Unfreeze the last few layers of the base model
+            for layer in model.layers[-4:]:
+                layer.trainable = True
+
+            # Compile the model again for fine-tuning
+            model.compile(optimizer=Adam(learning_rate=learning_rate_phase2), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+
+            # Fine-tune the model
+            history_phase2 = model.fit(train_generator, validation_data=validation_generator, epochs=epochs_phase2)
+            progress_bar.progress(100)
+
+            # Combine history of both training phases
+            for key in history_phase2.history.keys():
+                history_phase1.history[key].extend(history_phase2.history[key])
+
+            # Evaluate the model
+            loss, accuracy = model.evaluate(validation_generator)
+            st.write(f'Test Accuracy: {accuracy * 100:.2f}%')
+
+            # Display training results
+            st.write("Training complete!")
+            plot_training_history(history_phase1)
+            
+            # Save the re-trained model to temporary files with both .h5 and .keras extensions
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".h5") as tmp_file_h5, \
+                tempfile.NamedTemporaryFile(delete=False, suffix=".keras") as tmp_file_keras:
+                # Save the model in both formats
+                model.save(tmp_file_h5.name)
+                model.save(tmp_file_keras.name, save_format='keras')
+                
+                # Get file paths
+                temp_file_path_h5 = tmp_file_h5.name
+                temp_file_path_keras = tmp_file_keras.name
+            
+            # Remove(hide) training message
+            training_message.empty()
+            
+            # Remove(hide) the progress bar
+            progress_bar.empty()
+            
+            # Display celebration animation
+            st.balloons()
+
+            # Provide download links for both models
+            with open(temp_file_path_h5, "rb") as file_h5, open(temp_file_path_keras, "rb") as file_keras:
+                st.download_button(
+                    label="Download Trained Model (.h5)",
+                    data=file_h5,
+                    file_name="trained_skin_cancer_model.h5",
+                    mime="application/octet-stream"
+                )
+                st.download_button(
+                    label="Download Trained Model (.keras)",
+                    data=file_keras,
+                    file_name="trained_skin_cancer_model.keras",
+                    mime="application/octet-stream"
+                )
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
+        finally:
+            st.session_state.training_in_progress = False
 
 # To be placed in app.py or a suitable place in the project
 if __name__ == "__main__":
