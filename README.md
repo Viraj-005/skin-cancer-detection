@@ -37,9 +37,11 @@ To run this web app, you need to have the following installed on your machine:
 - Streamlit
 - TensorFlow
 - OpenCV
-- Matplotlib
+- Plotly
 - Numpy
 - Pandas
+- Pillow
+- Scipy
 
 ### Installation
 Clone the repository:
