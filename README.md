@@ -1,15 +1,15 @@
-# SmartSkin Scan                                                                                                                                                                                                                                                                                                                               
+# SmartSkin Scan
 
-Welcome to the SmartSkin Scan! (Skin Cancer Detection Web App) This application leverages the power of deep learning to assist users in detecting skin cancer through image analysis. Whether you're a healthcare professional or someone seeking to monitor skin health, this tool provides an easy-to-use interface for detection, visualization, and model training.
+Welcome to the SmartSkin Scan (Skin Cancer Detection Web App)! This application leverages the power of deep learning to assist users in detecting skin cancer through image analysis. Whether you're a healthcare professional or seeking to monitor skin health, this tool provides an easy-to-use interface for detection, visualization, and model training.
 
 ## Features
 
 ### Home
-On the Home page, users get an overview of what the web-app offers. The application is designed to help detect skin cancer by analyzing skin images. With this app, users can:
-- Upload images of skin lesions for analysis.
-- Use real-time camera functionality to capture and analyze skin images.
-- Visualize detailed metrics about the model’s performance.
-- Train and customize the skin cancer detection model according to their needs.
+On the Home page, users get an overview of what the web app offers. The application is designed to help detect skin cancer by analyzing skin images. With this app, users can:
+- Upload images of skin lesions for analysis. 📸
+- Use real-time camera functionality to capture and analyze skin images. ⏱️
+- Visualize detailed metrics about the model’s performance. 📊
+- Train and customize the skin cancer detection model according to their needs. 
 
 ### Detection
 The Detection page allows users to detect skin cancer through two methods:
@@ -42,18 +42,37 @@ To run this web app, you need to have the following installed on your machine:
 - Pandas
 
 ### Installation
-1. Clone the repository:
+Clone the repository:
    ```sh
    git clone https://github.com/your-username/skin-cancer-detection-web-app.git
    cd skin-cancer-detection-web-app
    ```
-2. Install the required packages:
-   ```sh
-   pip install -r requirements.txt
+## Requirements
+
+Before running the app, please ensure you have created a virtual environment (`.venv`). Follow these steps to set up the environment:
+
+1. **Create a virtual environment:**
+   ```bash
+   python -m venv .venv
    ```
 
+2. **Activate the virtual environment:**
+   - On Windows:
+     ```bash
+     .venv\Scripts\activate
+     ```
+   - On macOS and Linux:
+     ```bash
+     source .venv/bin/activate
+     ```
+
+3. **Install required packages:**
+   ```bash
+   pip install -r requirements.txt
+    ```
+
 ### Running the App
-To start the web-app, navigate to the project directory and run:
+To start the web app, navigate to the project directory and run:
 ```sh
 streamlit run app.py
 ```
@@ -61,7 +80,7 @@ streamlit run app.py
 ## Usage
 
 ### Home
-Navigate to the Home page to get a brief introduction to the web-app’s capabilities and features.
+Navigate to the Home page to get a brief introduction to the web app’s capabilities and features.
 
 ### Detection
 - **Upload Image**: Click on the "Upload" button to select an image from your device. The app will process the image and provide a diagnosis.
@@ -79,8 +98,4 @@ View detailed metrics about the model’s performance, including accuracy, loss,
 Contributions are welcome! Please fork the repository and create a pull request with your changes.
 
 ## License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
----
-
-Feel free to modify any section to better fit your specific implementation and preferences.
+This project is licensed under the MIT License. Please take a look at the [LICENSE](LICENSE) file for details.
