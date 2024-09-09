@@ -4,12 +4,15 @@
 
 Welcome to the SmartSkin Scan (Skin Cancer Detection Web App)! This application leverages the power of deep learning to assist users in detecting skin cancer through image analysis. Whether you're a healthcare professional or seeking to monitor skin health, this tool provides an easy-to-use interface for detection, visualization, and model training.
 
+You can explore SmartSkin Scan live on Streamlit: 
+https://smartskin-scan.streamlit.app/ 🌐
+
 ## Features
 
 ### Home
 On the Home page, users get an overview of what the web app offers. The application is designed to help detect skin cancer by analyzing skin images. With this app, users can:
 - Upload images of skin lesions for analysis. 📸                  
-- Visualize detailed metrics about the model’s performance. 📊
+- Visualize detailed metrics about the model’s performance. 📊                                        
 - Train and customize the skin cancer detection model according to their needs. 🧠
 
 ### Detection
